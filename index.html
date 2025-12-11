@@ -1984,21 +1984,29 @@ class RetirementPlanner {
         // Take the maximum required corpus
         this.targetCorpus = Math.max(annuityCorpus, fourPercentCorpus, expenseMultipleCorpus) * 1.25; // Add 25% buffer
 
-        // Calculate total existing investments
-        const totalExisting = currentCorpus + existingPF + existingPPF + existingNPS + existingEPF;
-        const futureValueExisting = totalExisting * Math.pow(1 + returnPre, this.yearsToRetirement);
+// Calculate total existing investments
+const totalExisting = currentCorpus + existingPF + existingPPF + existingNPS + existingEPF;
+const futureValueExisting = totalExisting * Math.pow(1 + returnPre, this.yearsToRetirement);
 
-        // Calculate required monthly SIP
-        const adjustedTarget = Math.max(0, this.targetCorpus - futureValueExisting);
-        const monthlyReturn = returnPre / 12;
-        const months = this.yearsToRetirement * 12;
+// Calculate required monthly SIP
+const adjustedTarget = Math.max(0, this.targetCorpus - futureValueExisting);
+const monthlyReturn = returnPre / 12;
+const months = this.yearsToRetirement * 12;
 
-        if (monthlyReturn > 0) {
-            this.monthlySIP = adjustedTarget * monthlyReturn / 
-                ((1 + monthlyReturn) * (Math.pow(1 + monthlyReturn, months) - 1));
-        } else {
-            this.monthlySIP = adjustedTarget / months;
-        }
+// Check if there's still a shortfall that needs to be covered
+if (adjustedTarget > 0) {
+    if (monthlyReturn > 0) {
+        // Formula for SIP calculation: FV = P * [(1+r)^n - 1] * (1+r) / r
+        // Rearranged to solve for P: P = FV * r / [(1+r) * ((1+r)^n - 1)]
+        this.monthlySIP = adjustedTarget * monthlyReturn / 
+            ((1 + monthlyReturn) * (Math.pow(1 + monthlyReturn, months) - 1));
+    } else {
+        this.monthlySIP = adjustedTarget / months;
+    }
+} else {
+    // If existing investments already cover the target, no SIP needed
+    this.monthlySIP = 0;
+}
 
         // Update UI
         this.updateCorpusResults(futureMonthlyExpenses, annuityCorpus, fourPercentCorpus, expenseMultipleCorpus);
@@ -2020,7 +2028,14 @@ class RetirementPlanner {
     updateCorpusResults(futureExpenses, annuity, fourPercent, expenseMultiple) {
         // Update main results
         document.getElementById('targetCorpusResult').textContent = `₹ ${this.formatNumber(this.targetCorpus)}`;
-        document.getElementById('monthlySIPResult').textContent = `₹ ${this.formatNumber(this.monthlySIP)}`;
+        const monthlySIPElement = document.getElementById('monthlySIPResult');
+if (this.monthlySIP === 0) {
+    monthlySIPElement.textContent = 'Not required';
+    monthlySIPElement.style.color = '#38b000'; // Green color for positive message
+} else {
+    monthlySIPElement.textContent = `₹ ${this.formatNumber(this.monthlySIP)}`;
+    monthlySIPElement.style.color = ''; // Reset to default color
+}
         document.getElementById('retirementYears').textContent = this.yearsToRetirement;
         document.getElementById('futureExpenses').textContent = `₹ ${this.formatNumber(futureExpenses)}`;
 
@@ -2031,7 +2046,12 @@ class RetirementPlanner {
 
         // Update header stats
         document.getElementById('targetCorpus').textContent = `₹ ${this.formatNumberShort(this.targetCorpus)}`;
-        document.getElementById('monthlySIP').textContent = `₹ ${this.formatNumberShort(this.monthlySIP)}`;
+        const monthlySIPHeader = document.getElementById('monthlySIP');
+if (this.monthlySIP === 0) {
+    monthlySIPHeader.textContent = 'Not needed';
+} else {
+    monthlySIPHeader.textContent = `₹ ${this.formatNumberShort(this.monthlySIP)}`;
+}
         document.getElementById('yearsLeft').textContent = this.yearsToRetirement;
     }
 
@@ -2176,77 +2196,104 @@ class RetirementPlanner {
         this.showToast('SWP calculation completed!', 'success');
     }
 
-    calculateSWPDetails(initialCorpus, monthlyWithdrawal, years, annualReturn, inflationRate) {
-        const monthlyReturn = annualReturn / 12;
-        const monthlyInflation = inflationRate / 12;
-        const months = years * 12;
+calculateSWPDetails(initialCorpus, monthlyWithdrawal, years, annualReturn, inflationRate) {
+    const monthlyReturn = annualReturn / 12;
+    const monthlyInflation = inflationRate / 12;
+    const months = years * 12;
 
-        let corpus = initialCorpus;
-        let currentWithdrawal = monthlyWithdrawal;
-        let totalWithdrawn = 0;
-        let monthsSupported = 0;
-        const corpusHistory = [];
+    let corpus = initialCorpus;
+    let currentWithdrawal = monthlyWithdrawal;
+    let totalWithdrawn = 0;
+    let monthsSupported = 0;
+    const corpusHistory = [initialCorpus];
+    const monthlyLabels = [];
 
-        for (let month = 1; month <= months; month++) {
-            // Adjust withdrawal for inflation annually
-            if (month > 1 && (month - 1) % 12 === 0) {
-                currentWithdrawal *= (1 + inflationRate);
-            }
-
-            // Check if we can withdraw
-            if (corpus <= 0 || currentWithdrawal > corpus) {
-                break;
-            }
-
-            // Withdraw at beginning of month
-            corpus -= currentWithdrawal;
-            totalWithdrawn += currentWithdrawal;
-
-            // Apply returns
-            corpus *= (1 + monthlyReturn);
-
-            corpusHistory.push(corpus);
-            monthsSupported = month;
+    for (let month = 1; month <= months; month++) {
+        // Apply returns on existing corpus FIRST
+        corpus = corpus * (1 + monthlyReturn);
+        
+        // Adjust withdrawal for inflation annually
+        if (month > 1 && (month - 1) % 12 === 0) {
+            currentWithdrawal *= (1 + inflationRate);
         }
 
-        const yearsSupported = monthsSupported / 12;
-        const withdrawalRate = (monthlyWithdrawal * 12) / initialCorpus;
+        // Check if we can withdraw
+        if (corpus <= currentWithdrawal) {
+            // Last partial withdrawal
+            totalWithdrawn += corpus;
+            corpus = 0;
+            corpusHistory.push(corpus);
+            monthlyLabels.push(`Month ${month}`);
+            monthsSupported = month;
+            break;
+        }
 
-        // Calculate safe withdrawal rates
-        const fourPercentWithdrawal = initialCorpus * 0.04 / 12;
-        const threePointFivePercentWithdrawal = initialCorpus * 0.035 / 12;
+        // Withdraw at END of month (after returns)
+        corpus -= currentWithdrawal;
+        totalWithdrawn += currentWithdrawal;
 
-        return {
-            yearsSupported,
-            totalWithdrawn,
-            remainingCorpus: corpus,
-            withdrawalRate,
-            corpusHistory,
-            safeWithdrawals: {
-                fourPercent: fourPercentWithdrawal,
-                threePointFivePercent: threePointFivePercentWithdrawal
-            }
-        };
+        corpusHistory.push(corpus);
+        monthlyLabels.push(`Month ${month}`);
+        monthsSupported = month;
+
+        // Stop if corpus is depleted
+        if (corpus <= 0) {
+            break;
+        }
     }
 
-    updateSWPResults(result) {
-        // Update result cards
-        document.getElementById('yearsSupported').textContent = result.yearsSupported.toFixed(1);
-        document.getElementById('totalWithdrawn').textContent = `₹ ${this.formatNumber(result.totalWithdrawn)}`;
-        document.getElementById('remainingCorpus').textContent = `₹ ${this.formatNumber(result.remainingCorpus)}`;
-        document.getElementById('withdrawalRate').textContent = `${(result.withdrawalRate * 100).toFixed(2)}%`;
+    const yearsSupported = monthsSupported / 12;
+    
+    // Calculate withdrawal rate
+    const initialAnnualWithdrawal = monthlyWithdrawal * 12;
+    const withdrawalRate = (initialAnnualWithdrawal / initialCorpus);
 
-        // Update safe withdrawal rates
-        document.getElementById('fourPercentSWP').textContent = `₹ ${this.formatNumber(result.safeWithdrawals.fourPercent)}/month`;
-        document.getElementById('threePointFivePercent').textContent = `₹ ${this.formatNumber(result.safeWithdrawals.threePointFivePercent)}/month`;
-        document.getElementById('yourWithdrawalRate').textContent = `${(result.withdrawalRate * 100).toFixed(2)}%`;
+    // Calculate safe withdrawal rates
+    const fourPercentWithdrawal = initialCorpus * 0.04 / 12;
+    const threePointFivePercentWithdrawal = initialCorpus * 0.035 / 12;
 
-        // Update chart
-        const labels = result.corpusHistory.map((_, i) => `Month ${i + 1}`);
-        this.swpChart.data.labels = labels.slice(0, Math.min(60, labels.length)); // Limit to 5 years for clarity
-        this.swpChart.data.datasets[0].data = result.corpusHistory.slice(0, Math.min(60, result.corpusHistory.length));
-        this.swpChart.update();
+    return {
+        yearsSupported,
+        totalWithdrawn,
+        remainingCorpus: corpus,
+        withdrawalRate,
+        corpusHistory,
+        monthlyLabels: monthlyLabels.slice(0, Math.min(60, monthlyLabels.length)),
+        safeWithdrawals: {
+            fourPercent: fourPercentWithdrawal,
+            threePointFivePercent: threePointFivePercentWithdrawal
+        }
+    };
+}
+updateSWPResults(result) {
+    // Update result cards
+    document.getElementById('yearsSupported').textContent = result.yearsSupported.toFixed(1);
+    document.getElementById('totalWithdrawn').textContent = `₹ ${this.formatNumber(result.totalWithdrawn)}`;
+    document.getElementById('remainingCorpus').textContent = `₹ ${this.formatNumber(result.remainingCorpus)}`;
+    
+    // Calculate and display withdrawal rate properly
+    const withdrawalRate = result.withdrawalRate * 100;
+    document.getElementById('withdrawalRate').textContent = `${withdrawalRate.toFixed(2)}%`;
+
+    // Update safe withdrawal rates
+    document.getElementById('fourPercentSWP').textContent = `₹ ${this.formatNumber(result.safeWithdrawals.fourPercent)}/month`;
+    document.getElementById('threePointFivePercent').textContent = `₹ ${this.formatNumber(result.safeWithdrawals.threePointFivePercent)}/month`;
+    
+    // Show actual withdrawal rate
+    const yourRate = (parseFloat(document.getElementById('monthlyWithdrawal').value) * 12 / 
+                     parseFloat(document.getElementById('swpCorpus').value)) * 100;
+    document.getElementById('yourWithdrawalRate').textContent = `${yourRate.toFixed(2)}%`;
+
+    // Update chart
+    this.swpChart.data.labels = result.monthlyLabels;
+    this.swpChart.data.datasets[0].data = result.corpusHistory.slice(0, result.monthlyLabels.length);
+    this.swpChart.update();
+    
+    // Show warning if withdrawal rate is too high
+    if (withdrawalRate > 4) {
+        this.showToast(`Warning: Your withdrawal rate (${withdrawalRate.toFixed(1)}%) is above the safe 4% rule!`, 'warning');
     }
+}
 
     calculateSTP() {
         const sourceCorpus = parseFloat(document.getElementById('stpSourceCorpus').value);
@@ -2381,53 +2428,70 @@ class RetirementPlanner {
         table.innerHTML = tableHTML;
     }
 
-    generateProjectionTable() {
-        const yearsToRetirement = this.yearsToRetirement;
-        const currentAge = parseInt(document.getElementById('currentAge').value);
-        const monthlySIP = this.monthlySIP;
-        const returnPre = parseFloat(document.getElementById('returnPre').value) / 100;
-        const monthlyReturn = returnPre / 12;
+generateProjectionTable() {
+    const yearsToRetirement = this.yearsToRetirement;
+    const currentAge = parseInt(document.getElementById('currentAge').value);
+    const monthlySIP = this.monthlySIP;
+    const returnPre = parseFloat(document.getElementById('returnPre').value) / 100;
+    const monthlyReturn = returnPre / 12;
 
-        let corpus = parseFloat(document.getElementById('currentCorpus').value);
-        corpus += parseFloat(document.getElementById('existingPF').value);
-        corpus += parseFloat(document.getElementById('existingPPF').value);
-        corpus += parseFloat(document.getElementById('existingNPS').value);
-        corpus += parseFloat(document.getElementById('existingEPF').value);
+    // Calculate initial existing investments
+    const initialInvestments = 
+        parseFloat(document.getElementById('currentCorpus').value) +
+        parseFloat(document.getElementById('existingPF').value) +
+        parseFloat(document.getElementById('existingPPF').value) +
+        parseFloat(document.getElementById('existingNPS').value) +
+        parseFloat(document.getElementById('existingEPF').value);
 
-        const tableBody = document.getElementById('projectionBody');
-        let tableHTML = '';
-        let totalInvested = 0;
+    let corpus = initialInvestments;
+    const tableBody = document.getElementById('projectionBody');
+    let tableHTML = '';
+    let totalSIPContributions = 0;
+    let totalContributions = initialInvestments; // Start with initial investments
 
-        for (let year = 1; year <= yearsToRetirement; year++) {
-            let yearCorpus = corpus;
-            
-            // Calculate for the year
-            for (let month = 1; month <= 12; month++) {
-                corpus = corpus * (1 + monthlyReturn) + monthlySIP;
-                totalInvested += monthlySIP;
-            }
-
-            const returnsEarned = corpus - totalInvested;
-            const percentComplete = Math.min(100, (corpus / this.targetCorpus) * 100);
-
-            tableHTML += `
-                <tr>
-                    <td>${year}</td>
-                    <td>${currentAge + year}</td>
-                    <td>₹ ${this.formatNumber(corpus)}</td>
-                    <td>₹ ${this.formatNumber(totalInvested)}</td>
-                    <td>₹ ${this.formatNumber(returnsEarned)}</td>
-                    <td>${percentComplete.toFixed(1)}%</td>
-                </tr>
-            `;
+    for (let year = 1; year <= yearsToRetirement; year++) {
+        // Store corpus at beginning of year
+        const corpusAtStartOfYear = corpus;
+        
+        // Calculate for the year
+        for (let month = 1; month <= 12; month++) {
+            // First apply returns on existing corpus
+            corpus = corpus * (1 + monthlyReturn);
+            // Then add monthly SIP
+            corpus += monthlySIP;
+            totalSIPContributions += monthlySIP;
         }
 
-        tableBody.innerHTML = tableHTML;
+        // Update total contributions (initial + SIPs)
+        totalContributions = initialInvestments + totalSIPContributions;
+        
+        // CORRECT Returns calculation:
+        // Returns = Current corpus - Total contributions (initial + SIPs)
+        const returnsEarned = corpus - totalContributions;
+        
+        // OR Alternative method: Returns = Current corpus - (Initial + SIPs)
+        // Both give same result
+        
+        const percentComplete = Math.min(100, (corpus / this.targetCorpus) * 100);
 
-        // Update readiness percentage
-        const readiness = Math.min(100, (corpus / this.targetCorpus) * 100);
-        document.getElementById('readinessPercent').textContent = `${readiness.toFixed(1)}%`;
-        document.querySelector('.progress-fill').style.width = `${readiness}%`;
+        tableHTML += `
+            <tr>
+                <td>${year}</td>
+                <td>${currentAge + year}</td>
+                <td>₹ ${this.formatNumber(corpus)}</td>
+                <td>₹ ${this.formatNumber(totalContributions)}</td>
+                <td>₹ ${this.formatNumber(returnsEarned)}</td>
+                <td>${percentComplete.toFixed(1)}%</td>
+            </tr>
+        `;
+    }
+
+    tableBody.innerHTML = tableHTML;
+
+    // Update readiness percentage
+    const readiness = Math.min(100, (corpus / this.targetCorpus) * 100);
+    document.getElementById('readinessPercent').textContent = `${readiness.toFixed(1)}%`;
+    document.querySelector('.progress-fill').style.width = `${readiness}%`;
         
         if (readiness < 30) {
             document.getElementById('readinessText').textContent = 'You need to significantly increase your savings';
