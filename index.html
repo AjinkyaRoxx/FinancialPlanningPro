@@ -1,0 +1,2741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprehensive Retirement Planner</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary: #4361ee;
+    --primary-dark: #3a56d4;
+    --secondary: #7209b7;
+    --success: #4cc9f0;
+    --danger: #f72585;
+    --warning: #f8961e;
+    --info: #4cc9f0;
+    --dark: #212529;
+    --light: #f8f9fa;
+    --gray: #6c757d;
+    --light-gray: #e9ecef;
+    --border-radius: 10px;
+    --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --transition: all 0.3s ease;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh;
+    color: var(--dark);
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Navigation */
+.navbar {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    color: white;
+    padding: 1rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: var(--box-shadow);
+}
+
+.nav-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.logo i {
+    font-size: 2rem;
+}
+
+.nav-links {
+    display: flex;
+    gap: 20px;
+}
+
+.nav-link {
+    color: white;
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: var(--border-radius);
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.nav-link:hover, .nav-link.active {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+.menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+/* Hero Section */
+.hero {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 3rem;
+    border-radius: var(--border-radius);
+    margin: 2rem 0;
+    box-shadow: var(--box-shadow);
+}
+
+.hero-content {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.hero-content h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+}
+
+.subtitle {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.hero-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-top: 2rem;
+}
+
+.stat-card {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    text-align: center;
+    backdrop-filter: blur(10px);
+    transition: var(--transition);
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.stat-card i {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    color: var(--success);
+}
+
+.stat-card h3 {
+    font-size: 1.8rem;
+    margin: 10px 0;
+}
+
+/* Tabs */
+.tabs {
+    background: white;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--box-shadow);
+}
+
+.tab-header {
+    display: flex;
+    background: var(--light-gray);
+    overflow-x: auto;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 1rem 1.5rem;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--gray);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: center;
+    transition: var(--transition);
+    white-space: nowrap;
+}
+
+.tab-btn:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.tab-btn.active {
+    background: white;
+    color: var(--primary);
+    border-bottom: 3px solid var(--primary);
+}
+
+.tab-content {
+    display: none;
+    padding: 2rem;
+}
+
+.tab-content.active {
+    display: block;
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Section Titles */
+.section-title {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--light-gray);
+}
+
+.section-title h2 {
+    font-size: 2rem;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.section-title p {
+    color: var(--gray);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Two Column Layout */
+.two-column {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+@media (max-width: 992px) {
+    .two-column {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Form Styles */
+.input-section {
+    background: var(--light);
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+}
+
+.input-section h3 {
+    color: var(--primary);
+    margin-bottom: 1.5rem;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--light-gray);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: var(--dark);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.input-with-unit {
+    display: flex;
+    position: relative;
+}
+
+.input-with-unit input {
+    flex: 1;
+    padding: 12px 16px;
+    border: 2px solid var(--light-gray);
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    transition: var(--transition);
+    padding-right: 60px;
+}
+
+.input-with-unit input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+}
+
+.input-with-unit .unit {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gray);
+    font-weight: 500;
+}
+
+.range-input {
+    width: 100%;
+    margin-top: 10px;
+    height: 6px;
+    -webkit-appearance: none;
+    background: var(--light-gray);
+    border-radius: 3px;
+    outline: none;
+}
+
+.range-input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    background: var(--primary);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.range-input::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+    background: var(--primary-dark);
+}
+
+.range-container {
+    position: relative;
+}
+
+.range-ticks {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 5px;
+    font-size: 0.8rem;
+    color: var(--gray);
+}
+
+.form-row {
+    display: flex;
+    gap: 1rem;
+}
+
+.form-row .form-group {
+    flex: 1;
+}
+
+.form-row .half {
+    flex: 0.5;
+}
+
+.form-select {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid var(--light-gray);
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    background: white;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.form-select:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+small {
+    color: var(--gray);
+    font-size: 0.875rem;
+    margin-top: 5px;
+    display: block;
+}
+
+/* Button Styles */
+.btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: white;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(67, 97, 238, 0.2);
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #38b000 0%, #2d9100 100%);
+    color: white;
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #f72585 0%, #d0006f 100%);
+    color: white;
+}
+
+.btn-outline {
+    background: transparent;
+    border: 2px solid var(--primary);
+    color: var(--primary);
+}
+
+.btn-outline:hover {
+    background: var(--primary);
+    color: white;
+}
+
+.btn-large {
+    padding: 15px 30px;
+    font-size: 1.1rem;
+    width: 100%;
+}
+
+/* Results Section */
+.results-section {
+    background: white;
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+}
+
+.results-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.result-card {
+    background: var(--light);
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: var(--transition);
+}
+
+.result-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--box-shadow);
+}
+
+.result-icon {
+    background: var(--primary);
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.result-content h4 {
+    font-size: 0.9rem;
+    color: var(--gray);
+    margin-bottom: 5px;
+}
+
+.result-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin: 5px 0;
+}
+
+.result-sub {
+    font-size: 0.8rem;
+    color: var(--gray);
+}
+
+/* Chart Container */
+.chart-container {
+    background: white;
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--light-gray);
+    margin: 2rem 0;
+    position: relative;
+    height: 300px;
+}
+
+/* Method Comparison */
+.method-comparison, .step-up-comparison, .safe-withdrawal, .allocation-timeline {
+    background: var(--light);
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    margin-top: 2rem;
+}
+
+.comparison-grid, .withdrawal-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.method-card, .comparison-card, .withdrawal-card {
+    background: white;
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    text-align: center;
+    transition: var(--transition);
+}
+
+.method-card:hover, .comparison-card:hover, .withdrawal-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--box-shadow);
+}
+
+.method-card h5, .comparison-card h5, .withdrawal-card h5 {
+    color: var(--gray);
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+}
+
+.method-value, .comparison-value, .withdrawal-value {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin: 10px 0;
+}
+
+.withdrawal-sub {
+    font-size: 0.8rem;
+    color: var(--gray);
+}
+
+/* Reports Grid */
+.reports-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.report-card {
+    background: white;
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+    transition: var(--transition);
+}
+
+.report-card:hover {
+    transform: translateY(-5px);
+}
+
+.report-icon {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    color: white;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+}
+
+.report-content {
+    flex: 1;
+}
+
+.report-content h3 {
+    color: var(--primary);
+    margin-bottom: 1rem;
+}
+
+.progress-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+.progress-bar {
+    flex: 1;
+    height: 10px;
+    background: var(--light-gray);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--success) 0%, var(--primary) 100%);
+    width: 0%;
+    transition: width 1s ease;
+}
+
+.progress-text {
+    font-weight: 700;
+    color: var(--primary);
+    min-width: 50px;
+}
+
+.export-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Table Styles */
+.table-responsive {
+    overflow-x: auto;
+    margin: 1rem 0;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--box-shadow);
+}
+
+thead {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: white;
+}
+
+th, td {
+    padding: 1rem;
+    text-align: center;
+    border-bottom: 1px solid var(--light-gray);
+}
+
+tbody tr:hover {
+    background: var(--light);
+}
+
+/* Action Buttons */
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+}
+
+/* Footer */
+.footer {
+    background: var(--dark);
+    color: white;
+    padding: 3rem 0 1rem;
+    margin-top: 3rem;
+}
+
+.footer-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+}
+
+.footer-section h4 {
+    margin-bottom: 1rem;
+    color: var(--light);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.footer-section p {
+    color: var(--gray);
+    line-height: 1.6;
+}
+
+.social-icons {
+    display: flex;
+    gap: 10px;
+}
+
+.social-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--gray);
+    background: none;
+    color: var(--gray);
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.social-btn:hover {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: white;
+    transform: translateY(-3px);
+}
+
+.footer-bottom {
+    text-align: center;
+    padding-top: 2rem;
+    margin-top: 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--gray);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .nav-links {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: var(--primary);
+        flex-direction: column;
+        padding: 1rem;
+        box-shadow: var(--box-shadow);
+    }
+    
+    .nav-links.active {
+        display: flex;
+    }
+    
+    .menu-toggle {
+        display: block;
+    }
+    
+    .hero {
+        padding: 2rem 1rem;
+    }
+    
+    .hero-content h1 {
+        font-size: 1.8rem;
+    }
+    
+    .tab-header {
+        flex-direction: column;
+    }
+    
+    .tab-btn {
+        text-align: left;
+        justify-content: flex-start;
+    }
+    
+    .two-column {
+        padding: 1rem;
+    }
+    
+    .results-grid, .comparison-grid, .withdrawal-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-row {
+        flex-direction: column;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
+}
+
+/* Utility Classes */
+.text-center { text-align: center; }
+.mt-1 { margin-top: 1rem; }
+.mt-2 { margin-top: 2rem; }
+.mb-1 { margin-bottom: 1rem; }
+.mb-2 { margin-bottom: 2rem; }
+
+/* Loading Animation */
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid var(--light-gray);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Toast Notifications */
+.toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: var(--dark);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 1001;
+}
+
+.toast.show {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.toast.success { background: var(--success); }
+.toast.error { background: var(--danger); }
+.toast.warning { background: var(--warning); }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-chart-line"></i>
+                <span>Retirement Planner Pro</span>
+            </div>
+            <div class="nav-links">
+                <a href="#corpus" class="nav-link active"><i class="fas fa-calculator"></i> Corpus</a>
+                <a href="#sip" class="nav-link"><i class="fas fa-chart-bar"></i> SIP</a>
+                <a href="#swp" class="nav-link"><i class="fas fa-wallet"></i> SWP</a>
+                <a href="#stp" class="nav-link"><i class="fas fa-exchange-alt"></i> STP</a>
+                <a href="#reports" class="nav-link"><i class="fas fa-file-alt"></i> Reports</a>
+            </div>
+            <button class="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Header -->
+        <header class="hero">
+            <div class="hero-content">
+                <h1><i class="fas fa-retirement"></i> Comprehensive Retirement Planner</h1>
+                <p class="subtitle">Plan your retirement corpus, SIP, SWP, and STP with detailed calculations and projections</p>
+            </div>
+            <div class="hero-stats">
+                <div class="stat-card">
+                    <i class="fas fa-bullseye"></i>
+                    <h3 id="targetCorpus">₹ 0</h3>
+                    <p>Target Corpus</p>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-rupee-sign"></i>
+                    <h3 id="monthlySIP">₹ 0</h3>
+                    <p>Monthly SIP</p>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-calendar-alt"></i>
+                    <h3 id="yearsLeft">0</h3>
+                    <p>Years to Retirement</p>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-percentage"></i>
+                    <h3 id="successRate">0%</h3>
+                    <p>Success Probability</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Tabs -->
+        <div class="tabs">
+            <div class="tab-header">
+                <button class="tab-btn active" data-tab="corpus"><i class="fas fa-calculator"></i> Retirement Corpus</button>
+                <button class="tab-btn" data-tab="sip"><i class="fas fa-chart-bar"></i> SIP Calculator</button>
+                <button class="tab-btn" data-tab="swp"><i class="fas fa-wallet"></i> SWP Calculator</button>
+                <button class="tab-btn" data-tab="stp"><i class="fas fa-exchange-alt"></i> STP Calculator</button>
+                <button class="tab-btn" data-tab="reports"><i class="fas fa-file-alt"></i> Comprehensive Reports</button>
+            </div>
+
+            <!-- Tab Contents -->
+            <div class="tab-content active" id="corpus">
+                <div class="section-title">
+                    <h2><i class="fas fa-calculator"></i> Retirement Corpus Calculator</h2>
+                    <p>Calculate your retirement corpus requirements considering inflation and returns</p>
+                </div>
+                
+                <div class="two-column">
+                    <!-- Input Form -->
+                    <div class="input-section">
+                        <h3><i class="fas fa-user"></i> Personal Information</h3>
+                        
+                        <div class="form-group">
+                            <label for="currentAge"><i class="fas fa-birthday-cake"></i> Current Age</label>
+                            <div class="input-with-unit">
+                                <input type="number" id="currentAge" min="18" max="70" value="35" step="1">
+                                <span class="unit">years</span>
+                            </div>
+                            <input type="range" id="currentAgeRange" min="18" max="70" value="35" step="1" class="range-input">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="retirementAge"><i class="fas fa-retirement"></i> Retirement Age</label>
+                            <div class="input-with-unit">
+                                <input type="number" id="retirementAge" min="45" max="75" value="60" step="1">
+                                <span class="unit">years</span>
+                            </div>
+                            <input type="range" id="retirementAgeRange" min="45" max="75" value="60" step="1" class="range-input">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="lifeExpectancy"><i class="fas fa-heartbeat"></i> Life Expectancy</label>
+                            <div class="input-with-unit">
+                                <input type="number" id="lifeExpectancy" min="75" max="100" value="90" step="1">
+                                <span class="unit">years</span>
+                            </div>
+                            <input type="range" id="lifeExpectancyRange" min="75" max="100" value="90" step="1" class="range-input">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="currentExpenses"><i class="fas fa-shopping-cart"></i> Current Monthly Expenses</label>
+                            <div class="input-with-unit">
+                                <input type="number" id="currentExpenses" min="10000" max="1000000" value="50000" step="1000">
+                                <span class="unit">₹</span>
+                            </div>
+                            <input type="range" id="currentExpensesRange" min="10000" max="500000" value="50000" step="5000" class="range-input">
+                        </div>
+                        
+                        <h3><i class="fas fa-chart-line"></i> Investment Parameters</h3>
+                        
+                        <div class="form-group">
+                            <label for="inflationPre"><i class="fas fa-arrow-up"></i> Pre-Retirement Inflation</label>
+                            <div class="input-with-unit">
+                                <input type="number" id="inflationPre" min="1" max="15" value="6" step="0.1">
+                                <span class="unit">%</span>
+                            </div>
+                            <div class="range-container">
+                                <input type="range" id="inflationPreRange" min="1" max="15" value="6" step="0.1" class="range-input">
+                                <div class="range-ticks">
+                                    <span>1%</span>
+                                    <span>15%</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="returnPre"><i class="fas fa-trend-up"></i> Pre-Retirement Return</label>
+                            <div class="input-with-unit">
+                                <input type="number" id="returnPre" min="5" max="20" value="12" step="0.1">
+                                <span class="unit">%</span>
+                            </div>
+                            <input type="range" id="returnPreRange" min="5" max="20" value="12" step="0.1" class="range-input">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="returnPost"><i class="fas fa-trend-down"></i> Post-Retirement Return</label>
+                            <div class="input-with-unit">
+                                <input type="number" id="returnPost" min="4" max="12" value="8" step="0.1">
+                                <span class="unit">%</span>
+                            </div>
+                            <input type="range" id="returnPostRange" min="4" max="12" value="8" step="0.1" class="range-input">
+                        </div>
+                        
+                        <h3><i class="fas fa-piggy-bank"></i> Existing Investments</h3>
+                        
+                        <div class="form-group">
+                            <label for="currentCorpus"><i class="fas fa-rupee-sign"></i> Current Corpus</label>
+                            <div class="input-with-unit">
+                                <input type="number" id="currentCorpus" min="0" max="100000000" value="2000000" step="10000">
+                                <span class="unit">₹</span>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group half">
+                                <label for="existingPF">Provident Fund</label>
+                                <div class="input-with-unit">
+                                    <input type="number" id="existingPF" min="0" max="50000000" value="500000" step="10000">
+                                    <span class="unit">₹</span>
+                                </div>
+                            </div>
+                            <div class="form-group half">
+                                <label for="existingPPF">PPF</label>
+                                <div class="input-with-unit">
+                                    <input type="number" id="existingPPF" min="0" max="50000000" value="300000" step="10000">
+                                    <span class="unit">₹</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group half">
+                                <label for="existingNPS">NPS</label>
+                                <div class="input-with-unit">
+                                    <input type="number" id="existingNPS" min="0" max="50000000" value="200000" step="10000">
+                                    <span class="unit">₹</span>
+                                </div>
+                            </div>
+                            <div class="form-group half">
+                                <label for="existingEPF">EPF</label>
+                                <div class="input-with-unit">
+                                    <input type="number" id="existingEPF" min="0" max="50000000" value="1000000" step="10000">
+                                    <span class="unit">₹</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button id="calculateCorpus" class="btn btn-primary btn-large">
+                            <i class="fas fa-calculator"></i> Calculate Retirement Corpus
+                        </button>
+                    </div>
+                    
+                    <!-- Results Section -->
+                    <div class="results-section">
+                        <h3><i class="fas fa-chart-pie"></i> Corpus Results</h3>
+                        
+                        <div class="results-grid">
+                            <div class="result-card">
+                                <div class="result-icon">
+                                    <i class="fas fa-bullseye"></i>
+                                </div>
+                                <div class="result-content">
+                                    <h4>Target Corpus</h4>
+                                    <p class="result-value" id="targetCorpusResult">₹ 0</p>
+                                    <p class="result-sub">Required at retirement</p>
+                                </div>
+                            </div>
+                            
+                            <div class="result-card">
+                                <div class="result-icon">
+                                    <i class="fas fa-rupee-sign"></i>
+                                </div>
+                                <div class="result-content">
+                                    <h4>Monthly SIP Needed</h4>
+                                    <p class="result-value" id="monthlySIPResult">₹ 0</p>
+                                    <p class="result-sub">To achieve target</p>
+                                </div>
+                            </div>
+                            
+                            <div class="result-card">
+                                <div class="result-icon">
+                                    <i class="fas fa-calendar"></i>
+                                </div>
+                                <div class="result-content">
+                                    <h4>Retirement Years</h4>
+                                    <p class="result-value" id="retirementYears">0</p>
+                                    <p class="result-sub">Years in retirement</p>
+                                </div>
+                            </div>
+                            
+                            <div class="result-card">
+                                <div class="result-icon">
+                                    <i class="fas fa-chart-line"></i>
+                                </div>
+                                <div class="result-content">
+                                    <h4>Future Expenses</h4>
+                                    <p class="result-value" id="futureExpenses">₹ 0</p>
+                                    <p class="result-sub">Monthly at retirement</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-container">
+                            <canvas id="corpusChart"></canvas>
+                        </div>
+                        
+                        <div class="method-comparison">
+                            <h4><i class="fas fa-balance-scale"></i> Calculation Methods</h4>
+                            <div class="comparison-grid">
+                                <div class="method-card">
+                                    <h5>Annuity Method</h5>
+                                    <p class="method-value" id="annuityMethod">₹ 0</p>
+                                </div>
+                                <div class="method-card">
+                                    <h5>4% Rule</h5>
+                                    <p class="method-value" id="fourPercentRule">₹ 0</p>
+                                </div>
+                                <div class="method-card">
+                                    <h5>Expense Multiple</h5>
+                                    <p class="method-value" id="expenseMultiple">₹ 0</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- SIP Calculator Tab -->
+            <div class="tab-content" id="sip">
+                <div class="section-title">
+                    <h2><i class="fas fa-chart-bar"></i> SIP Calculator</h2>
+                    <p>Calculate Systematic Investment Plan with step-up options</p>
+                </div>
+                
+                <div class="two-column">
+                    <div class="input-section">
+                        <h3><i class="fas fa-cogs"></i> SIP Parameters</h3>
+                        
+                        <div class="form-group">
+                            <label for="sipAmount"><i class="fas fa-rupee-sign"></i> Monthly Investment</label>
+                            <div class="input-with-unit">
+                                <input type="number" id="sipAmount" min="500" max="1000000" value="10000" step="500">
+                                <span class="unit">₹</span>
+                            </div>
+                            <input type="range" id="sipAmountRange" min="500" max="1000000" value="10000" step="500" class="range-input">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="sipYears"><i class="fas fa-calendar-alt"></i> Investment Period</label>
+                            <div class="input-with-unit">
+                                <input type="number" id="sipYears" min="1" max="40" value="25" step="1">
+                                <span class="unit">years</span>
+                            </div>
+                            <input type="range" id="sipYearsRange" min="1" max="40" value="25" step="1" class="range-input">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="sipReturn"><i class="fas fa-percentage"></i> Expected Annual Return</label>
+                            <div class="input-with-unit">
+                                <input type="number" id="sipReturn" min="5" max="20" value="12" step="0.1">
+                                <span class="unit">%</span>
+                            </div>
+                            <input type="range" id="sipReturnRange" min="5" max="20" value="12" step="0.1" class="range-input">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="stepUpRate"><i class="fas fa-chart-line"></i> Annual Step-up Rate</label>
+                            <div class="input-with-unit">
+                                <input type="number" id="stepUpRate" min="0" max="20" value="10" step="0.1">
+                                <span class="unit">%</span>
+                            </div>
+                            <input type="range" id="stepUpRateRange" min="0" max="20" value="10" step="0.1" class="range-input">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="sipGoal"><i class="fas fa-bullseye"></i> Target Amount (Optional)</label>
+                            <div class="input-with-unit">
+                                <input type="number" id="sipGoal" min="0" max="1000000000" value="0" step="10000">
+                                <span class="unit">₹</span>
+                            </div>
+                            <small>Leave 0 to calculate based on monthly investment</small>
+                        </div>
+                        
+                        <button id="calculateSIP" class="btn btn-primary btn-large">
+                            <i class="fas fa-calculator"></i> Calculate SIP
+                        </button>
+                    </div>
+                    
+                    <div class="results-section">
+                        <h3><i class="fas fa-chart-pie"></i> SIP Results</h3>
+                        
+                        <div class="results-grid">
+                            <div class="result-card">
+                                <div class="result-icon">
+                                    <i class="fas fa-piggy-bank"></i>
+                                </div>
+                                <div class="result-content">
+                                    <h4>Total Investment</h4>
+                                    <p class="result-value" id="sipTotalInvested">₹ 0</p>
+                                    <p class="result-sub">Principal amount</p>
+                                </div>
+                            </div>
+                            
+                            <div class="result-card">
+                                <div class="result-icon">
+                                    <i class="fas fa-money-bill-wave"></i>
+                                </div>
+                                <div class="result-content">
+                                    <h4>Final Value</h4>
+                                    <p class="result-value" id="sipFinalValue">₹ 0</p>
+                                    <p class="result-sub">With returns</p>
+                                </div>
+                            </div>
+                            
+                            <div class="result-card">
+                                <div class="result-icon">
+                                    <i class="fas fa-chart-line"></i>
+                                </div>
+                                <div class="result-content">
+                                    <h4>Wealth Gain</h4>
+                                    <p class="result-value" id="sipWealthGain">₹ 0</p>
+                                    <p class="result-sub">Returns earned</p>
+                                </div>
+                            </div>
+                            
+                            <div class="result-card">
+                                <div class="result-icon">
+                                    <i class="fas fa-cube"></i>
+                                </div>
+                                <div class="result-content">
+                                    <h4>XIRR</h4>
+                                    <p class="result-value" id="sipXIRR">0%</p>
+                                    <p class="result-sub">Annualized return</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-container">
+                            <canvas id="sipChart"></canvas>
+                        </div>
+                        
+                        <div class="step-up-comparison">
+                            <h4><i class="fas fa-chart-line"></i> Step-up vs Regular SIP</h4>
+                            <div class="comparison-grid">
+                                <div class="comparison-card">
+                                    <h5>Regular SIP</h5>
+                                    <p class="comparison-value" id="regularSIP">₹ 0</p>
+                                </div>
+                                <div class="comparison-card">
+                                    <h5>Step-up SIP</h5>
+                                    <p class="comparison-value" id="stepupSIP">₹ 0</p>
+                                </div>
+                                <div class="comparison-card">
+                                    <h5>Difference</h5>
+                                    <p class="comparison-value" id="sipDifference">₹ 0</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- SWP Calculator Tab -->
+            <div class="tab-content" id="swp">
+                <div class="section-title">
+                    <h2><i class="fas fa-wallet"></i> SWP Calculator</h2>
+                    <p>Calculate Systematic Withdrawal Plan for retirement income</p>
+                </div>
+                
+                <div class="two-column">
+                    <div class="input-section">
+                        <h3><i class="fas fa-cogs"></i> SWP Parameters</h3>
+                        
+                        <div class="form-group">
+                            <label for="swpCorpus"><i class="fas fa-rupee-sign"></i> Initial Corpus</label>
+                            <div class="input-with-unit">
+                                <input type="number" id="swpCorpus" min="100000" max="1000000000" value="5000000" step="10000">
+                                <span class="unit">₹</span>
+                            </div>
+                            <input type="range" id="swpCorpusRange" min="100000" max="100000000" value="5000000" step="10000" class="range-input">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="monthlyWithdrawal"><i class="fas fa-hand-holding-usd"></i> Monthly Withdrawal</label>
+                            <div class="input-with-unit">
+                                <input type="number" id="monthlyWithdrawal" min="1000" max="500000" value="50000" step="1000">
+                                <span class="unit">₹</span>
+                            </div>
+                            <input type="range" id="monthlyWithdrawalRange" min="1000" max="500000" value="50000" step="1000" class="range-input">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="withdrawalYears"><i class="fas fa-calendar-alt"></i> Withdrawal Period</label>
+                            <div class="input-with-unit">
+                                <input type="number" id="withdrawalYears" min="1" max="40" value="30" step="1">
+                                <span class="unit">years</span>
+                            </div>
+                            <input type="range" id="withdrawalYearsRange" min="1" max="40" value="30" step="1" class="range-input">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="swpReturn"><i class="fas fa-percentage"></i> Annual Return</label>
+                            <div class="input-with-unit">
+                                <input type="number" id="swpReturn" min="4" max="15" value="8" step="0.1">
+                                <span class="unit">%</span>
+                            </div>
+                            <input type="range" id="swpReturnRange" min="4" max="15" value="8" step="0.1" class="range-input">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="withdrawalInflation"><i class="fas fa-arrow-up"></i> Withdrawal Inflation</label>
+                            <div class="input-with-unit">
+                                <input type="number" id="withdrawalInflation" min="0" max="10" value="6" step="0.1">
+                                <span class="unit">%</span>
+                            </div>
+                            <input type="range" id="withdrawalInflationRange" min="0" max="10" value="6" step="0.1" class="range-input">
+                        </div>
+                        
+                        <button id="calculateSWP" class="btn btn-primary btn-large">
+                            <i class="fas fa-calculator"></i> Calculate SWP
+                        </button>
+                    </div>
+                    
+                    <div class="results-section">
+                        <h3><i class="fas fa-chart-pie"></i> SWP Results</h3>
+                        
+                        <div class="results-grid">
+                            <div class="result-card">
+                                <div class="result-icon">
+                                    <i class="fas fa-calendar-check"></i>
+                                </div>
+                                <div class="result-content">
+                                    <h4>Years Supported</h4>
+                                    <p class="result-value" id="yearsSupported">0</p>
+                                    <p class="result-sub">Duration corpus lasts</p>
+                                </div>
+                            </div>
+                            
+                            <div class="result-card">
+                                <div class="result-icon">
+                                    <i class="fas fa-hand-holding-usd"></i>
+                                </div>
+                                <div class="result-content">
+                                    <h4>Total Withdrawn</h4>
+                                    <p class="result-value" id="totalWithdrawn">₹ 0</p>
+                                    <p class="result-sub">Cumulative withdrawal</p>
+                                </div>
+                            </div>
+                            
+                            <div class="result-card">
+                                <div class="result-icon">
+                                    <i class="fas fa-wallet"></i>
+                                </div>
+                                <div class="result-content">
+                                    <h4>Remaining Corpus</h4>
+                                    <p class="result-value" id="remainingCorpus">₹ 0</p>
+                                    <p class="result-sub">At end of period</p>
+                                </div>
+                            </div>
+                            
+                            <div class="result-card">
+                                <div class="result-icon">
+                                    <i class="fas fa-percentage"></i>
+                                </div>
+                                <div class="result-content">
+                                    <h4>Withdrawal Rate</h4>
+                                    <p class="result-value" id="withdrawalRate">0%</p>
+                                    <p class="result-sub">Annual withdrawal %</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-container">
+                            <canvas id="swpChart"></canvas>
+                        </div>
+                        
+                        <div class="safe-withdrawal">
+                            <h4><i class="fas fa-shield-alt"></i> Safe Withdrawal Rates</h4>
+                            <div class="withdrawal-grid">
+                                <div class="withdrawal-card">
+                                    <h5>4% Rule</h5>
+                                    <p class="withdrawal-value" id="fourPercentSWP">₹ 0/month</p>
+                                    <p class="withdrawal-sub">Trinity Study</p>
+                                </div>
+                                <div class="withdrawal-card">
+                                    <h5>3.5% Conservative</h5>
+                                    <p class="withdrawal-value" id="threePointFivePercent">₹ 0/month</p>
+                                    <p class="withdrawal-sub">For India</p>
+                                </div>
+                                <div class="withdrawal-card">
+                                    <h5>Your Rate</h5>
+                                    <p class="withdrawal-value" id="yourWithdrawalRate">0%</p>
+                                    <p class="withdrawal-sub">Current calculation</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- STP Calculator Tab -->
+            <div class="tab-content" id="stp">
+                <div class="section-title">
+                    <h2><i class="fas fa-exchange-alt"></i> STP Calculator</h2>
+                    <p>Calculate Systematic Transfer Plan for asset allocation shift</p>
+                </div>
+                
+                <div class="two-column">
+                    <div class="input-section">
+                        <h3><i class="fas fa-cogs"></i> STP Parameters</h3>
+                        
+                        <div class="form-group">
+                            <label for="stpSourceCorpus"><i class="fas fa-database"></i> Source Corpus</label>
+                            <div class="input-with-unit">
+                                <input type="number" id="stpSourceCorpus" min="100000" max="1000000000" value="10000000" step="10000">
+                                <span class="unit">₹</span>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="stpMonthlyTransfer"><i class="fas fa-exchange-alt"></i> Monthly Transfer</label>
+                            <div class="input-with-unit">
+                                <input type="number" id="stpMonthlyTransfer" min="1000" max="1000000" value="50000" step="1000">
+                                <span class="unit">₹</span>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="stpDuration"><i class="fas fa-clock"></i> STP Duration</label>
+                            <div class="input-with-unit">
+                                <input type="number" id="stpDuration" min="1" max="120" value="60" step="1">
+                                <span class="unit">months</span>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group half">
+                                <label for="sourceReturn"><i class="fas fa-chart-line"></i> Source Return</label>
+                                <div class="input-with-unit">
+                                    <input type="number" id="sourceReturn" min="5" max="20" value="12" step="0.1">
+                                    <span class="unit">%</span>
+                                </div>
+                            </div>
+                            <div class="form-group half">
+                                <label for="targetReturn"><i class="fas fa-chart-line"></i> Target Return</label>
+                                <div class="input-with-unit">
+                                    <input type="number" id="targetReturn" min="4" max="10" value="7" step="0.1">
+                                    <span class="unit">%</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="stpType">Transfer Type</label>
+                            <select id="stpType" class="form-select">
+                                <option value="fixed">Fixed Amount</option>
+                                <option value="percentage">Percentage of Source</option>
+                                <option value="accelerated">Accelerated Transfer</option>
+                            </select>
+                        </div>
+                        
+                        <button id="calculateSTP" class="btn btn-primary btn-large">
+                            <i class="fas fa-calculator"></i> Calculate STP
+                        </button>
+                    </div>
+                    
+                    <div class="results-section">
+                        <h3><i class="fas fa-chart-pie"></i> STP Results</h3>
+                        
+                        <div class="results-grid">
+                            <div class="result-card">
+                                <div class="result-icon">
+                                    <i class="fas fa-exchange-alt"></i>
+                                </div>
+                                <div class="result-content">
+                                    <h4>Total Transferred</h4>
+                                    <p class="result-value" id="totalTransferred">₹ 0</p>
+                                    <p class="result-sub">Amount moved</p>
+                                </div>
+                            </div>
+                            
+                            <div class="result-card">
+                                <div class="result-icon">
+                                    <i class="fas fa-balance-scale"></i>
+                                </div>
+                                <div class="result-content">
+                                    <h4>Final Allocation</h4>
+                                    <p class="result-value" id="finalAllocation">0%</p>
+                                    <p class="result-sub">Target allocation</p>
+                                </div>
+                            </div>
+                            
+                            <div class="result-card">
+                                <div class="result-icon">
+                                    <i class="fas fa-calendar-alt"></i>
+                                </div>
+                                <div class="result-content">
+                                    <h4>Transfer Period</h4>
+                                    <p class="result-value" id="transferPeriod">0</p>
+                                    <p class="result-sub">Months</p>
+                                </div>
+                            </div>
+                            
+                            <div class="result-card">
+                                <div class="result-icon">
+                                    <i class="fas fa-calculator"></i>
+                                </div>
+                                <div class="result-content">
+                                    <h4>Final Corpus</h4>
+                                    <p class="result-value" id="finalCorpus">₹ 0</p>
+                                    <p class="result-sub">Total value</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-container">
+                            <canvas id="stpChart"></canvas>
+                        </div>
+                        
+                        <div class="allocation-timeline">
+                            <h4><i class="fas fa-timeline"></i> Allocation Over Time</h4>
+                            <div id="allocationTable" class="table-container">
+                                <!-- Allocation table will be generated here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Reports Tab -->
+            <div class="tab-content" id="reports">
+                <div class="section-title">
+                    <h2><i class="fas fa-file-alt"></i> Comprehensive Reports</h2>
+                    <p>Detailed analysis and recommendations for your retirement plan</p>
+                </div>
+                
+                <div class="reports-grid">
+                    <div class="report-card">
+                        <div class="report-icon">
+                            <i class="fas fa-chart-pie"></i>
+                        </div>
+                        <div class="report-content">
+                            <h3>Retirement Readiness</h3>
+                            <div class="progress-container">
+                                <div class="progress-bar" id="readinessBar">
+                                    <div class="progress-fill"></div>
+                                </div>
+                                <span class="progress-text" id="readinessPercent">0%</span>
+                            </div>
+                            <p id="readinessText">Calculate corpus to see readiness</p>
+                        </div>
+                    </div>
+                    
+                    <div class="report-card">
+                        <div class="report-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="report-content">
+                            <h3>Risk Analysis</h3>
+                            <div id="riskAnalysis">
+                                <p>No risks calculated yet</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="report-card">
+                        <div class="report-icon">
+                            <i class="fas fa-lightbulb"></i>
+                        </div>
+                        <div class="report-content">
+                            <h3>Recommendations</h3>
+                            <div id="recommendations">
+                                <p>Complete calculations to get personalized recommendations</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="report-card">
+                        <div class="report-icon">
+                            <i class="fas fa-download"></i>
+                        </div>
+                        <div class="report-content">
+                            <h3>Export Reports</h3>
+                            <div class="export-buttons">
+                                <button id="exportPDF" class="btn btn-outline">
+                                    <i class="fas fa-file-pdf"></i> PDF Report
+                                </button>
+                                <button id="exportCSV" class="btn btn-outline">
+                                    <i class="fas fa-file-csv"></i> CSV Data
+                                </button>
+                                <button id="exportSummary" class="btn btn-outline">
+                                    <i class="fas fa-file-alt"></i> Summary
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="detailed-report">
+                    <h3><i class="fas fa-file-invoice"></i> Detailed Projection</h3>
+                    <div class="table-responsive">
+                        <table id="projectionTable">
+                            <thead>
+                                <tr>
+                                    <th>Year</th>
+                                    <th>Age</th>
+                                    <th>Corpus Value</th>
+                                    <th>Total Invested</th>
+                                    <th>Returns Earned</th>
+                                    <th>% Complete</th>
+                                </tr>
+                            </thead>
+                            <tbody id="projectionBody">
+                                <!-- Yearly projections will be added here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button id="runMonteCarlo" class="btn btn-primary">
+                        <i class="fas fa-random"></i> Run Monte Carlo Simulation
+                    </button>
+                    <button id="generateFullReport" class="btn btn-success">
+                        <i class="fas fa-sync-alt"></i> Generate Full Report
+                    </button>
+                    <button id="resetAll" class="btn btn-danger">
+                        <i class="fas fa-trash-alt"></i> Reset All Calculations
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4><i class="fas fa-info-circle"></i> About</h4>
+                <p>Comprehensive Retirement Planning Tool with SIP, SWP, and STP calculators.</p>
+            </div>
+            <div class="footer-section">
+                <h4><i class="fas fa-exclamation-triangle"></i> Disclaimer</h4>
+                <p>This is for educational purposes only. Consult a financial advisor for personalized advice.</p>
+            </div>
+            <div class="footer-section">
+                <h4><i class="fas fa-share-alt"></i> Share</h4>
+                <div class="social-icons">
+                    <button class="social-btn"><i class="fab fa-twitter"></i></button>
+                    <button class="social-btn"><i class="fab fa-facebook"></i></button>
+                    <button class="social-btn"><i class="fab fa-linkedin"></i></button>
+                    <button class="social-btn"><i class="fas fa-envelope"></i></button>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Retirement Planner Pro. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Retirement Planning Application - Main JavaScript
+
+class RetirementPlanner {
+    constructor() {
+        this.currentCorpus = 0;
+        this.targetCorpus = 0;
+        this.monthlySIP = 0;
+        this.yearsToRetirement = 0;
+        this.initializeCharts();
+        this.initializeEventListeners();
+        this.loadDefaultData();
+    }
+
+    initializeCharts() {
+        // Corpus Chart
+        this.corpusChart = new Chart(document.getElementById('corpusChart'), {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Corpus Growth',
+                    data: [],
+                    borderColor: '#4361ee',
+                    backgroundColor: 'rgba(67, 97, 238, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: (context) => `₹ ${this.formatNumber(context.raw)}`
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: (value) => `₹ ${this.formatNumber(value)}`
+                        }
+                    }
+                }
+            }
+        });
+
+        // SIP Chart
+        this.sipChart = new Chart(document.getElementById('sipChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Investment', 'Returns'],
+                datasets: [{
+                    label: 'Amount',
+                    data: [0, 0],
+                    backgroundColor: ['#4361ee', '#4cc9f0']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: (context) => `₹ ${this.formatNumber(context.raw)}`
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: (value) => `₹ ${this.formatNumber(value)}`
+                        }
+                    }
+                }
+            }
+        });
+
+        // SWP Chart
+        this.swpChart = new Chart(document.getElementById('swpChart'), {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Corpus Balance',
+                    data: [],
+                    borderColor: '#f72585',
+                    backgroundColor: 'rgba(247, 37, 133, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: (context) => `₹ ${this.formatNumber(context.raw)}`
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: (value) => `₹ ${this.formatNumber(value)}`
+                        }
+                    }
+                }
+            }
+        });
+
+        // STP Chart
+        this.stpChart = new Chart(document.getElementById('stpChart'), {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [
+                    {
+                        label: 'Source Fund',
+                        data: [],
+                        borderColor: '#4361ee',
+                        backgroundColor: 'rgba(67, 97, 238, 0.1)',
+                        fill: true
+                    },
+                    {
+                        label: 'Target Fund',
+                        data: [],
+                        borderColor: '#4cc9f0',
+                        backgroundColor: 'rgba(76, 201, 240, 0.1)',
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: (context) => {
+                                const label = context.dataset.label || '';
+                                const value = context.raw;
+                                return `${label}: ₹ ${this.formatNumber(value)}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: (value) => `₹ ${this.formatNumber(value)}`
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    initializeEventListeners() {
+        // Navigation
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const tab = e.target.getAttribute('href').substring(1);
+                this.switchTab(tab);
+            });
+        });
+
+        // Tab buttons
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tabId = btn.getAttribute('data-tab');
+                this.switchTab(tabId);
+            });
+        });
+
+        // Menu toggle
+        document.querySelector('.menu-toggle').addEventListener('click', () => {
+            document.querySelector('.nav-links').classList.toggle('active');
+        });
+
+        // Input range synchronization
+        this.syncRangeInputs();
+
+        // Calculate buttons
+        document.getElementById('calculateCorpus').addEventListener('click', () => this.calculateCorpus());
+        document.getElementById('calculateSIP').addEventListener('click', () => this.calculateSIP());
+        document.getElementById('calculateSWP').addEventListener('click', () => this.calculateSWP());
+        document.getElementById('calculateSTP').addEventListener('click', () => this.calculateSTP());
+
+        // Export buttons
+        document.getElementById('exportPDF').addEventListener('click', () => this.exportPDF());
+        document.getElementById('exportCSV').addEventListener('click', () => this.exportCSV());
+        document.getElementById('exportSummary').addEventListener('click', () => this.exportSummary());
+
+        // Other actions
+        document.getElementById('runMonteCarlo').addEventListener('click', () => this.runMonteCarlo());
+        document.getElementById('generateFullReport').addEventListener('click', () => this.generateFullReport());
+        document.getElementById('resetAll').addEventListener('click', () => this.resetAll());
+
+        // Real-time updates for some inputs
+        document.getElementById('currentAge').addEventListener('input', () => this.updateStats());
+        document.getElementById('retirementAge').addEventListener('input', () => this.updateStats());
+        document.getElementById('currentExpenses').addEventListener('input', () => this.updateStats());
+    }
+
+    syncRangeInputs() {
+        // Sync number inputs with range inputs
+        const syncInputs = [
+            ['currentAge', 'currentAgeRange'],
+            ['retirementAge', 'retirementAgeRange'],
+            ['lifeExpectancy', 'lifeExpectancyRange'],
+            ['currentExpenses', 'currentExpensesRange'],
+            ['inflationPre', 'inflationPreRange'],
+            ['returnPre', 'returnPreRange'],
+            ['returnPost', 'returnPostRange'],
+            ['sipAmount', 'sipAmountRange'],
+            ['sipYears', 'sipYearsRange'],
+            ['sipReturn', 'sipReturnRange'],
+            ['stepUpRate', 'stepUpRateRange'],
+            ['swpCorpus', 'swpCorpusRange'],
+            ['monthlyWithdrawal', 'monthlyWithdrawalRange'],
+            ['withdrawalYears', 'withdrawalYearsRange'],
+            ['swpReturn', 'swpReturnRange'],
+            ['withdrawalInflation', 'withdrawalInflationRange']
+        ];
+
+        syncInputs.forEach(([numberId, rangeId]) => {
+            const numberInput = document.getElementById(numberId);
+            const rangeInput = document.getElementById(rangeId);
+
+            if (numberInput && rangeInput) {
+                // Sync from number to range
+                numberInput.addEventListener('input', () => {
+                    rangeInput.value = numberInput.value;
+                });
+
+                // Sync from range to number
+                rangeInput.addEventListener('input', () => {
+                    numberInput.value = rangeInput.value;
+                    this.updateStats();
+                });
+
+                // Initial sync
+                rangeInput.value = numberInput.value;
+            }
+        });
+    }
+
+    loadDefaultData() {
+        // Set default values and calculate initial corpus
+        this.calculateCorpus();
+    }
+
+    switchTab(tabId) {
+        // Update active nav link
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === `#${tabId}`) {
+                link.classList.add('active');
+            }
+        });
+
+        // Update active tab button
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.getAttribute('data-tab') === tabId) {
+                btn.classList.add('active');
+            }
+        });
+
+        // Show active tab content
+        document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.remove('active');
+            if (content.id === tabId) {
+                content.classList.add('active');
+            }
+        });
+
+        // Close mobile menu if open
+        document.querySelector('.nav-links').classList.remove('active');
+    }
+
+    calculateCorpus() {
+        const currentAge = parseInt(document.getElementById('currentAge').value);
+        const retirementAge = parseInt(document.getElementById('retirementAge').value);
+        const lifeExpectancy = parseInt(document.getElementById('lifeExpectancy').value);
+        const currentExpenses = parseFloat(document.getElementById('currentExpenses').value);
+        const inflationPre = parseFloat(document.getElementById('inflationPre').value) / 100;
+        const returnPre = parseFloat(document.getElementById('returnPre').value) / 100;
+        const returnPost = parseFloat(document.getElementById('returnPost').value) / 100;
+        
+        const currentCorpus = parseFloat(document.getElementById('currentCorpus').value);
+        const existingPF = parseFloat(document.getElementById('existingPF').value);
+        const existingPPF = parseFloat(document.getElementById('existingPPF').value);
+        const existingNPS = parseFloat(document.getElementById('existingNPS').value);
+        const existingEPF = parseFloat(document.getElementById('existingEPF').value);
+
+        this.yearsToRetirement = retirementAge - currentAge;
+        const retirementYears = lifeExpectancy - retirementAge;
+
+        // Calculate future expenses at retirement
+        const futureMonthlyExpenses = currentExpenses * Math.pow(1 + inflationPre, this.yearsToRetirement);
+        const futureAnnualExpenses = futureMonthlyExpenses * 12;
+
+        // Calculate corpus using different methods
+        const annuityCorpus = this.calculateAnnuityCorpus(futureAnnualExpenses, retirementYears, returnPost, inflationPre);
+        const fourPercentCorpus = futureAnnualExpenses / 0.04;
+        const expenseMultipleCorpus = futureAnnualExpenses * (retirementYears <= 20 ? 15 : retirementYears <= 30 ? 20 : 25);
+
+        // Take the maximum required corpus
+        this.targetCorpus = Math.max(annuityCorpus, fourPercentCorpus, expenseMultipleCorpus) * 1.25; // Add 25% buffer
+
+        // Calculate total existing investments
+        const totalExisting = currentCorpus + existingPF + existingPPF + existingNPS + existingEPF;
+        const futureValueExisting = totalExisting * Math.pow(1 + returnPre, this.yearsToRetirement);
+
+        // Calculate required monthly SIP
+        const adjustedTarget = Math.max(0, this.targetCorpus - futureValueExisting);
+        const monthlyReturn = returnPre / 12;
+        const months = this.yearsToRetirement * 12;
+
+        if (monthlyReturn > 0) {
+            this.monthlySIP = adjustedTarget * monthlyReturn / 
+                ((1 + monthlyReturn) * (Math.pow(1 + monthlyReturn, months) - 1));
+        } else {
+            this.monthlySIP = adjustedTarget / months;
+        }
+
+        // Update UI
+        this.updateCorpusResults(futureMonthlyExpenses, annuityCorpus, fourPercentCorpus, expenseMultipleCorpus);
+        this.updateStats();
+        this.generateCorpusChart();
+        this.generateProjectionTable();
+        this.generateRecommendations();
+        this.showToast('Retirement corpus calculated successfully!', 'success');
+    }
+
+    calculateAnnuityCorpus(annualExpense, years, returnRate, inflationRate) {
+        if (returnRate !== inflationRate) {
+            return (annualExpense * (1 - Math.pow((1 + inflationRate) / (1 + returnRate), years))) / (returnRate - inflationRate);
+        } else {
+            return annualExpense * years;
+        }
+    }
+
+    updateCorpusResults(futureExpenses, annuity, fourPercent, expenseMultiple) {
+        // Update main results
+        document.getElementById('targetCorpusResult').textContent = `₹ ${this.formatNumber(this.targetCorpus)}`;
+        document.getElementById('monthlySIPResult').textContent = `₹ ${this.formatNumber(this.monthlySIP)}`;
+        document.getElementById('retirementYears').textContent = this.yearsToRetirement;
+        document.getElementById('futureExpenses').textContent = `₹ ${this.formatNumber(futureExpenses)}`;
+
+        // Update comparison methods
+        document.getElementById('annuityMethod').textContent = `₹ ${this.formatNumber(annuity)}`;
+        document.getElementById('fourPercentRule').textContent = `₹ ${this.formatNumber(fourPercent)}`;
+        document.getElementById('expenseMultiple').textContent = `₹ ${this.formatNumber(expenseMultiple)}`;
+
+        // Update header stats
+        document.getElementById('targetCorpus').textContent = `₹ ${this.formatNumberShort(this.targetCorpus)}`;
+        document.getElementById('monthlySIP').textContent = `₹ ${this.formatNumberShort(this.monthlySIP)}`;
+        document.getElementById('yearsLeft').textContent = this.yearsToRetirement;
+    }
+
+    generateCorpusChart() {
+        const yearsToRetirement = this.yearsToRetirement;
+        const monthlySIP = this.monthlySIP;
+        const returnPre = parseFloat(document.getElementById('returnPre').value) / 100;
+        const monthlyReturn = returnPre / 12;
+
+        const labels = [];
+        const data = [];
+
+        let corpus = parseFloat(document.getElementById('currentCorpus').value);
+        corpus += parseFloat(document.getElementById('existingPF').value);
+        corpus += parseFloat(document.getElementById('existingPPF').value);
+        corpus += parseFloat(document.getElementById('existingNPS').value);
+        corpus += parseFloat(document.getElementById('existingEPF').value);
+
+        for (let year = 1; year <= yearsToRetirement; year++) {
+            for (let month = 1; month <= 12; month++) {
+                corpus = corpus * (1 + monthlyReturn) + monthlySIP;
+            }
+            labels.push(`Year ${year}`);
+            data.push(corpus);
+        }
+
+        this.corpusChart.data.labels = labels;
+        this.corpusChart.data.datasets[0].data = data;
+        this.corpusChart.update();
+    }
+
+    calculateSIP() {
+        const monthlyInvestment = parseFloat(document.getElementById('sipAmount').value);
+        const years = parseInt(document.getElementById('sipYears').value);
+        const annualReturn = parseFloat(document.getElementById('sipReturn').value) / 100;
+        const stepUpRate = parseFloat(document.getElementById('stepUpRate').value) / 100;
+        const targetAmount = parseFloat(document.getElementById('sipGoal').value);
+
+        let result;
+        if (targetAmount > 0) {
+            // Calculate SIP needed for target
+            result = this.calculateSIPForTarget(targetAmount, years, annualReturn);
+        } else {
+            // Calculate SIP future value
+            result = this.calculateSIPFutureValue(monthlyInvestment, years, annualReturn, stepUpRate);
+        }
+
+        this.updateSIPResults(result);
+        this.showToast('SIP calculation completed!', 'success');
+    }
+
+    calculateSIPFutureValue(monthlyInvestment, years, annualReturn, stepUpRate) {
+        const monthlyReturn = annualReturn / 12;
+        const months = years * 12;
+
+        // Regular SIP (no step-up)
+        let regularValue, stepUpValue;
+        if (monthlyReturn > 0) {
+            regularValue = monthlyInvestment * 
+                ((Math.pow(1 + monthlyReturn, months) - 1) / monthlyReturn) * 
+                (1 + monthlyReturn);
+        } else {
+            regularValue = monthlyInvestment * months;
+        }
+
+        // Step-up SIP
+        let totalInvested = 0;
+        stepUpValue = 0;
+        let currentMonthly = monthlyInvestment;
+
+        for (let month = 1; month <= months; month++) {
+            // Increase investment annually
+            if (month > 1 && (month - 1) % 12 === 0) {
+                currentMonthly *= (1 + stepUpRate);
+            }
+
+            stepUpValue = stepUpValue * (1 + monthlyReturn) + currentMonthly;
+            totalInvested += currentMonthly;
+        }
+
+        const regularInvested = monthlyInvestment * months;
+
+        return {
+            regular: {
+                futureValue: regularValue,
+                totalInvested: regularInvested,
+                returns: regularValue - regularInvested
+            },
+            stepUp: {
+                futureValue: stepUpValue,
+                totalInvested: totalInvested,
+                returns: stepUpValue - totalInvested
+            },
+            xirr: annualReturn * 100
+        };
+    }
+
+    calculateSIPForTarget(targetAmount, years, annualReturn) {
+        const monthlyReturn = annualReturn / 12;
+        const months = years * 12;
+
+        let requiredSIP;
+        if (monthlyReturn > 0) {
+            requiredSIP = targetAmount * monthlyReturn / 
+                ((1 + monthlyReturn) * (Math.pow(1 + monthlyReturn, months) - 1));
+        } else {
+            requiredSIP = targetAmount / months;
+        }
+
+        return this.calculateSIPFutureValue(requiredSIP, years, annualReturn, 0.10);
+    }
+
+    updateSIPResults(result) {
+        // Update result cards
+        document.getElementById('sipTotalInvested').textContent = `₹ ${this.formatNumber(result.stepUp.totalInvested)}`;
+        document.getElementById('sipFinalValue').textContent = `₹ ${this.formatNumber(result.stepUp.futureValue)}`;
+        document.getElementById('sipWealthGain').textContent = `₹ ${this.formatNumber(result.stepUp.returns)}`;
+        document.getElementById('sipXIRR').textContent = `${result.xirr.toFixed(2)}%`;
+
+        // Update comparison
+        document.getElementById('regularSIP').textContent = `₹ ${this.formatNumber(result.regular.futureValue)}`;
+        document.getElementById('stepupSIP').textContent = `₹ ${this.formatNumber(result.stepUp.futureValue)}`;
+        document.getElementById('sipDifference').textContent = `₹ ${this.formatNumber(result.stepUp.futureValue - result.regular.futureValue)}`;
+
+        // Update chart
+        this.sipChart.data.datasets[0].data = [
+            result.stepUp.totalInvested,
+            result.stepUp.returns
+        ];
+        this.sipChart.update();
+    }
+
+    calculateSWP() {
+        const initialCorpus = parseFloat(document.getElementById('swpCorpus').value);
+        const monthlyWithdrawal = parseFloat(document.getElementById('monthlyWithdrawal').value);
+        const years = parseInt(document.getElementById('withdrawalYears').value);
+        const annualReturn = parseFloat(document.getElementById('swpReturn').value) / 100;
+        const inflationRate = parseFloat(document.getElementById('withdrawalInflation').value) / 100;
+
+        const result = this.calculateSWPDetails(initialCorpus, monthlyWithdrawal, years, annualReturn, inflationRate);
+        this.updateSWPResults(result);
+        this.showToast('SWP calculation completed!', 'success');
+    }
+
+    calculateSWPDetails(initialCorpus, monthlyWithdrawal, years, annualReturn, inflationRate) {
+        const monthlyReturn = annualReturn / 12;
+        const monthlyInflation = inflationRate / 12;
+        const months = years * 12;
+
+        let corpus = initialCorpus;
+        let currentWithdrawal = monthlyWithdrawal;
+        let totalWithdrawn = 0;
+        let monthsSupported = 0;
+        const corpusHistory = [];
+
+        for (let month = 1; month <= months; month++) {
+            // Adjust withdrawal for inflation annually
+            if (month > 1 && (month - 1) % 12 === 0) {
+                currentWithdrawal *= (1 + inflationRate);
+            }
+
+            // Check if we can withdraw
+            if (corpus <= 0 || currentWithdrawal > corpus) {
+                break;
+            }
+
+            // Withdraw at beginning of month
+            corpus -= currentWithdrawal;
+            totalWithdrawn += currentWithdrawal;
+
+            // Apply returns
+            corpus *= (1 + monthlyReturn);
+
+            corpusHistory.push(corpus);
+            monthsSupported = month;
+        }
+
+        const yearsSupported = monthsSupported / 12;
+        const withdrawalRate = (monthlyWithdrawal * 12) / initialCorpus;
+
+        // Calculate safe withdrawal rates
+        const fourPercentWithdrawal = initialCorpus * 0.04 / 12;
+        const threePointFivePercentWithdrawal = initialCorpus * 0.035 / 12;
+
+        return {
+            yearsSupported,
+            totalWithdrawn,
+            remainingCorpus: corpus,
+            withdrawalRate,
+            corpusHistory,
+            safeWithdrawals: {
+                fourPercent: fourPercentWithdrawal,
+                threePointFivePercent: threePointFivePercentWithdrawal
+            }
+        };
+    }
+
+    updateSWPResults(result) {
+        // Update result cards
+        document.getElementById('yearsSupported').textContent = result.yearsSupported.toFixed(1);
+        document.getElementById('totalWithdrawn').textContent = `₹ ${this.formatNumber(result.totalWithdrawn)}`;
+        document.getElementById('remainingCorpus').textContent = `₹ ${this.formatNumber(result.remainingCorpus)}`;
+        document.getElementById('withdrawalRate').textContent = `${(result.withdrawalRate * 100).toFixed(2)}%`;
+
+        // Update safe withdrawal rates
+        document.getElementById('fourPercentSWP').textContent = `₹ ${this.formatNumber(result.safeWithdrawals.fourPercent)}/month`;
+        document.getElementById('threePointFivePercent').textContent = `₹ ${this.formatNumber(result.safeWithdrawals.threePointFivePercent)}/month`;
+        document.getElementById('yourWithdrawalRate').textContent = `${(result.withdrawalRate * 100).toFixed(2)}%`;
+
+        // Update chart
+        const labels = result.corpusHistory.map((_, i) => `Month ${i + 1}`);
+        this.swpChart.data.labels = labels.slice(0, Math.min(60, labels.length)); // Limit to 5 years for clarity
+        this.swpChart.data.datasets[0].data = result.corpusHistory.slice(0, Math.min(60, result.corpusHistory.length));
+        this.swpChart.update();
+    }
+
+    calculateSTP() {
+        const sourceCorpus = parseFloat(document.getElementById('stpSourceCorpus').value);
+        const monthlyTransfer = parseFloat(document.getElementById('stpMonthlyTransfer').value);
+        const durationMonths = parseInt(document.getElementById('stpDuration').value);
+        const sourceReturn = parseFloat(document.getElementById('sourceReturn').value) / 100;
+        const targetReturn = parseFloat(document.getElementById('targetReturn').value) / 100;
+        const transferType = document.getElementById('stpType').value;
+
+        const result = this.calculateSTPDetails(sourceCorpus, monthlyTransfer, durationMonths, sourceReturn, targetReturn, transferType);
+        this.updateSTPResults(result);
+        this.showToast('STP calculation completed!', 'success');
+    }
+
+    calculateSTPDetails(sourceCorpus, monthlyTransfer, durationMonths, sourceReturn, targetReturn, transferType) {
+        const sourceMonthlyReturn = sourceReturn / 12;
+        const targetMonthlyReturn = targetReturn / 12;
+
+        let sourceBalance = sourceCorpus;
+        let targetBalance = 0;
+        let totalTransferred = 0;
+
+        const sourceHistory = [sourceCorpus];
+        const targetHistory = [0];
+        const months = [];
+
+        for (let month = 1; month <= durationMonths; month++) {
+            months.push(`Month ${month}`);
+
+            // Calculate transfer amount based on type
+            let transferAmount;
+            switch (transferType) {
+                case 'percentage':
+                    transferAmount = sourceBalance * (monthlyTransfer / 100);
+                    break;
+                case 'accelerated':
+                    const year = Math.ceil(month / 12);
+                    transferAmount = monthlyTransfer * Math.pow(1.1, year - 1);
+                    break;
+                default: // fixed
+                    transferAmount = monthlyTransfer;
+            }
+
+            // Cap transfer at remaining source balance
+            transferAmount = Math.min(transferAmount, sourceBalance);
+
+            // Transfer
+            sourceBalance -= transferAmount;
+            targetBalance += transferAmount;
+            totalTransferred += transferAmount;
+
+            // Apply returns
+            sourceBalance *= (1 + sourceMonthlyReturn);
+            targetBalance *= (1 + targetMonthlyReturn);
+
+            sourceHistory.push(sourceBalance);
+            targetHistory.push(targetBalance);
+        }
+
+        // Final transfer of remaining amount
+        if (sourceBalance > 0) {
+            targetBalance += sourceBalance;
+            totalTransferred += sourceBalance;
+            sourceBalance = 0;
+        }
+
+        const finalAllocation = targetBalance > 0 ? 
+            (targetBalance / (sourceBalance + targetBalance)) * 100 : 0;
+
+        return {
+            totalTransferred,
+            finalAllocation,
+            sourceBalance,
+            targetBalance,
+            finalCorpus: sourceBalance + targetBalance,
+            sourceHistory,
+            targetHistory,
+            months: months.slice(0, 60) // Limit for chart
+        };
+    }
+
+    updateSTPResults(result) {
+        // Update result cards
+        document.getElementById('totalTransferred').textContent = `₹ ${this.formatNumber(result.totalTransferred)}`;
+        document.getElementById('finalAllocation').textContent = `${result.finalAllocation.toFixed(1)}%`;
+        document.getElementById('transferPeriod').textContent = result.months.length;
+        document.getElementById('finalCorpus').textContent = `₹ ${this.formatNumber(result.finalCorpus)}`;
+
+        // Update chart
+        this.stpChart.data.labels = result.months;
+        this.stpChart.data.datasets[0].data = result.sourceHistory.slice(0, result.months.length);
+        this.stpChart.data.datasets[1].data = result.targetHistory.slice(0, result.months.length);
+        this.stpChart.update();
+
+        // Generate allocation table
+        this.generateAllocationTable(result);
+    }
+
+    generateAllocationTable(result) {
+        const table = document.getElementById('allocationTable');
+        table.innerHTML = '';
+
+        const tableHTML = `
+            <table>
+                <thead>
+                    <tr>
+                        <th>Month</th>
+                        <th>Source Fund</th>
+                        <th>Target Fund</th>
+                        <th>Total</th>
+                        <th>Target %</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${result.months.map((month, i) => {
+                        const total = result.sourceHistory[i] + result.targetHistory[i];
+                        const targetPercent = total > 0 ? (result.targetHistory[i] / total * 100).toFixed(1) : '0.0';
+                        return `
+                            <tr>
+                                <td>${month}</td>
+                                <td>₹ ${this.formatNumber(result.sourceHistory[i])}</td>
+                                <td>₹ ${this.formatNumber(result.targetHistory[i])}</td>
+                                <td>₹ ${this.formatNumber(total)}</td>
+                                <td>${targetPercent}%</td>
+                            </tr>
+                        `;
+                    }).join('')}
+                </tbody>
+            </table>
+        `;
+
+        table.innerHTML = tableHTML;
+    }
+
+    generateProjectionTable() {
+        const yearsToRetirement = this.yearsToRetirement;
+        const currentAge = parseInt(document.getElementById('currentAge').value);
+        const monthlySIP = this.monthlySIP;
+        const returnPre = parseFloat(document.getElementById('returnPre').value) / 100;
+        const monthlyReturn = returnPre / 12;
+
+        let corpus = parseFloat(document.getElementById('currentCorpus').value);
+        corpus += parseFloat(document.getElementById('existingPF').value);
+        corpus += parseFloat(document.getElementById('existingPPF').value);
+        corpus += parseFloat(document.getElementById('existingNPS').value);
+        corpus += parseFloat(document.getElementById('existingEPF').value);
+
+        const tableBody = document.getElementById('projectionBody');
+        let tableHTML = '';
+        let totalInvested = 0;
+
+        for (let year = 1; year <= yearsToRetirement; year++) {
+            let yearCorpus = corpus;
+            
+            // Calculate for the year
+            for (let month = 1; month <= 12; month++) {
+                corpus = corpus * (1 + monthlyReturn) + monthlySIP;
+                totalInvested += monthlySIP;
+            }
+
+            const returnsEarned = corpus - totalInvested;
+            const percentComplete = Math.min(100, (corpus / this.targetCorpus) * 100);
+
+            tableHTML += `
+                <tr>
+                    <td>${year}</td>
+                    <td>${currentAge + year}</td>
+                    <td>₹ ${this.formatNumber(corpus)}</td>
+                    <td>₹ ${this.formatNumber(totalInvested)}</td>
+                    <td>₹ ${this.formatNumber(returnsEarned)}</td>
+                    <td>${percentComplete.toFixed(1)}%</td>
+                </tr>
+            `;
+        }
+
+        tableBody.innerHTML = tableHTML;
+
+        // Update readiness percentage
+        const readiness = Math.min(100, (corpus / this.targetCorpus) * 100);
+        document.getElementById('readinessPercent').textContent = `${readiness.toFixed(1)}%`;
+        document.querySelector('.progress-fill').style.width = `${readiness}%`;
+        
+        if (readiness < 30) {
+            document.getElementById('readinessText').textContent = 'You need to significantly increase your savings';
+        } else if (readiness < 60) {
+            document.getElementById('readinessText').textContent = 'Good progress, but more savings needed';
+        } else if (readiness < 90) {
+            document.getElementById('readinessText').textContent = 'Great progress! You are on track';
+        } else {
+            document.getElementById('readinessText').textContent = 'Excellent! You are ready for retirement';
+        }
+    }
+
+    generateRecommendations() {
+        const currentAge = parseInt(document.getElementById('currentAge').value);
+        const yearsToRetirement = this.yearsToRetirement;
+        const monthlySIP = this.monthlySIP;
+        const currentIncome = monthlySIP * 12 * 2; // Approximate income based on SIP
+
+        let recommendationsHTML = '';
+        let riskAnalysisHTML = '';
+
+        // Recommendations based on age and time to retirement
+        if (yearsToRetirement > 20) {
+            recommendationsHTML += `
+                <p><i class="fas fa-check-circle text-success"></i> Consider aggressive allocation (70% Equity, 20% Debt, 10% Gold)</p>
+                <p><i class="fas fa-check-circle text-success"></i> Start SIP early to benefit from compounding</p>
+            `;
+        } else if (yearsToRetirement > 10) {
+            recommendationsHTML += `
+                <p><i class="fas fa-check-circle text-warning"></i> Shift to moderate allocation (60% Equity, 30% Debt, 10% Gold)</p>
+                <p><i class="fas fa-check-circle text-warning"></i> Consider increasing SIP by 10% annually</p>
+            `;
+        } else {
+            recommendationsHTML += `
+                <p><i class="fas fa-check-circle text-danger"></i> Move to conservative allocation (40% Equity, 50% Debt, 10% Gold)</p>
+                <p><i class="fas fa-check-circle text-danger"></i> Start STP from equity to debt funds</p>
+            `;
+        }
+
+        // General recommendations
+        recommendationsHTML += `
+            <p><i class="fas fa-check-circle text-info"></i> Maintain emergency fund of 6-12 months expenses</p>
+            <p><i class="fas fa-check-circle text-info"></i> Get adequate health and term insurance</p>
+            <p><i class="fas fa-check-circle text-info"></i> Maximize tax-saving investments under 80C, 80D, NPS</p>
+        `;
+
+        // Risk analysis
+        if (monthlySIP > currentIncome * 0.5 / 12) {
+            riskAnalysisHTML += `
+                <p><i class="fas fa-exclamation-triangle text-danger"></i> <strong>High SIP burden:</strong> Monthly SIP is high relative to income</p>
+            `;
+        }
+
+        if (yearsToRetirement < 10) {
+            riskAnalysisHTML += `
+                <p><i class="fas fa-exclamation-triangle text-warning"></i> <strong>Sequence risk:</strong> Close to retirement, market volatility can impact corpus</p>
+            `;
+        }
+
+        const inflationRate = parseFloat(document.getElementById('inflationPre').value);
+        if (inflationRate > 7) {
+            riskAnalysisHTML += `
+                <p><i class="fas fa-exclamation-triangle text-warning"></i> <strong>Inflation risk:</strong> High inflation can erode purchasing power</p>
+            `;
+        }
+
+        if (riskAnalysisHTML === '') {
+            riskAnalysisHTML = '<p><i class="fas fa-check-circle text-success"></i> No significant risks identified</p>';
+        }
+
+        document.getElementById('recommendations').innerHTML = recommendationsHTML;
+        document.getElementById('riskAnalysis').innerHTML = riskAnalysisHTML;
+    }
+
+    runMonteCarlo() {
+        const initialCorpus = this.targetCorpus;
+        const monthlyWithdrawal = parseFloat(document.getElementById('currentExpenses').value);
+        const years = parseInt(document.getElementById('lifeExpectancy').value) - parseInt(document.getElementById('retirementAge').value);
+
+        // Simplified Monte Carlo simulation
+        let successCount = 0;
+        const simulations = 1000;
+
+        for (let i = 0; i < simulations; i++) {
+            let corpus = initialCorpus;
+            let currentWithdrawal = monthlyWithdrawal;
+            let failed = false;
+
+            for (let year = 0; year < years; year++) {
+                // Random annual return between 6% and 14%
+                const annualReturn = 0.08 + (Math.random() - 0.5) * 0.08;
+                
+                // Adjust for inflation
+                currentWithdrawal *= 1.06;
+
+                // Annual withdrawal
+                const annualWithdrawal = currentWithdrawal * 12;
+
+                if (annualWithdrawal > corpus) {
+                    failed = true;
+                    break;
+                }
+
+                corpus -= annualWithdrawal;
+                corpus *= (1 + annualReturn);
+            }
+
+            if (!failed) successCount++;
+        }
+
+        const successRate = (successCount / simulations) * 100;
+        document.getElementById('successRate').textContent = `${successRate.toFixed(1)}%`;
+
+        let message;
+        if (successRate > 90) {
+            message = 'Excellent! Your plan has high success probability';
+        } else if (successRate > 75) {
+            message = 'Good! Your plan has reasonable success probability';
+        } else if (successRate > 60) {
+            message = 'Moderate! Consider increasing your corpus or reducing expenses';
+        } else {
+            message = 'Risky! You need to significantly improve your plan';
+        }
+
+        this.showToast(`Monte Carlo Simulation: ${successRate.toFixed(1)}% success rate. ${message}`, 'info');
+    }
+
+    updateStats() {
+        const currentAge = parseInt(document.getElementById('currentAge').value);
+        const retirementAge = parseInt(document.getElementById('retirementAge').value);
+        const yearsLeft = retirementAge - currentAge;
+        document.getElementById('yearsLeft').textContent = yearsLeft;
+    }
+
+    exportPDF() {
+        this.showToast('PDF export feature would be implemented with a PDF library', 'info');
+        // In a real implementation, you would use jsPDF or similar library
+    }
+
+    exportCSV() {
+        // Create CSV content
+        let csvContent = "Retirement Planning Report\n\n";
+        csvContent += "Parameter,Value\n";
+        csvContent += `Target Corpus,${this.targetCorpus}\n`;
+        csvContent += `Monthly SIP Required,${this.monthlySIP}\n`;
+        csvContent += `Years to Retirement,${this.yearsToRetirement}\n`;
+
+        // Create download link
+        const blob = new Blob([csvContent], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'retirement_plan.csv';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+
+        this.showToast('CSV report downloaded!', 'success');
+    }
+
+    exportSummary() {
+        const summary = `
+            Retirement Planning Summary
+            ===========================
+            
+            Target Retirement Corpus: ₹ ${this.formatNumber(this.targetCorpus)}
+            Monthly SIP Required: ₹ ${this.formatNumber(this.monthlySIP)}
+            Years to Retirement: ${this.yearsToRetirement}
+            
+            Current Age: ${document.getElementById('currentAge').value}
+            Retirement Age: ${document.getElementById('retirementAge').value}
+            Life Expectancy: ${document.getElementById('lifeExpectancy').value}
+            
+            Investment Parameters:
+            - Pre-retirement return: ${document.getElementById('returnPre').value}%
+            - Post-retirement return: ${document.getElementById('returnPost').value}%
+            - Inflation rate: ${document.getElementById('inflationPre').value}%
+            
+            Generated on: ${new Date().toLocaleDateString()}
+        `;
+
+        const blob = new Blob([summary], { type: 'text/plain' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'retirement_summary.txt';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+
+        this.showToast('Summary downloaded!', 'success');
+    }
+
+    generateFullReport() {
+        this.calculateCorpus();
+        this.calculateSIP();
+        this.calculateSWP();
+        this.calculateSTP();
+        this.runMonteCarlo();
+        this.showToast('Full report generated successfully!', 'success');
+    }
+
+    resetAll() {
+        if (confirm('Are you sure you want to reset all calculations?')) {
+            // Reset form values to defaults
+            document.getElementById('currentAge').value = 35;
+            document.getElementById('retirementAge').value = 60;
+            document.getElementById('lifeExpectancy').value = 90;
+            document.getElementById('currentExpenses').value = 50000;
+            document.getElementById('inflationPre').value = 6;
+            document.getElementById('returnPre').value = 12;
+            document.getElementById('returnPost').value = 8;
+            document.getElementById('currentCorpus').value = 2000000;
+            document.getElementById('existingPF').value = 500000;
+            document.getElementById('existingPPF').value = 300000;
+            document.getElementById('existingNPS').value = 200000;
+            document.getElementById('existingEPF').value = 1000000;
+
+            // Update range inputs
+            this.syncRangeInputs();
+
+            // Reset results
+            this.targetCorpus = 0;
+            this.monthlySIP = 0;
+            this.yearsToRetirement = 0;
+
+            // Clear charts
+            this.corpusChart.data.labels = [];
+            this.corpusChart.data.datasets[0].data = [];
+            this.corpusChart.update();
+
+            this.sipChart.data.datasets[0].data = [0, 0];
+            this.sipChart.update();
+
+            this.swpChart.data.labels = [];
+            this.swpChart.data.datasets[0].data = [];
+            this.swpChart.update();
+
+            this.stpChart.data.labels = [];
+            this.stpChart.data.datasets[0].data = [];
+            this.stpChart.data.datasets[1].data = [];
+            this.stpChart.update();
+
+            // Clear tables
+            document.getElementById('projectionBody').innerHTML = '';
+            document.getElementById('allocationTable').innerHTML = '';
+
+            // Reset stats
+            this.updateStats();
+            document.getElementById('targetCorpus').textContent = '₹ 0';
+            document.getElementById('monthlySIP').textContent = '₹ 0';
+            document.getElementById('successRate').textContent = '0%';
+
+            this.showToast('All calculations have been reset', 'info');
+        }
+    }
+
+    showToast(message, type = 'info') {
+        // Create toast element
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+
+        document.body.appendChild(toast);
+
+        // Show toast
+        setTimeout(() => {
+            toast.classList.add('show');
+        }, 10);
+
+        // Hide and remove toast after 3 seconds
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => {
+                document.body.removeChild(toast);
+            }, 300);
+        }, 3000);
+    }
+
+    formatNumber(num) {
+        if (num >= 10000000) {
+            return (num / 10000000).toFixed(2) + ' Cr';
+        } else if (num >= 100000) {
+            return (num / 100000).toFixed(2) + ' L';
+        } else if (num >= 1000) {
+            return (num / 1000).toFixed(1) + ' K';
+        }
+        return Math.round(num).toLocaleString();
+    }
+
+    formatNumberShort(num) {
+        if (num >= 10000000) {
+            return (num / 10000000).toFixed(1) + 'Cr';
+        } else if (num >= 100000) {
+            return (num / 100000).toFixed(1) + 'L';
+        } else if (num >= 1000) {
+            return (num / 1000).toFixed(0) + 'K';
+        }
+        return Math.round(num);
+    }
+}
+
+// Initialize the application when the page loads
+document.addEventListener('DOMContentLoaded', () => {
+    const retirementPlanner = new RetirementPlanner();
+});
+    </script>
+</body>
+</html>
