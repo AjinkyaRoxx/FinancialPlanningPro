@@ -2566,58 +2566,136 @@ generateProjectionTable() {
         document.getElementById('riskAnalysis').innerHTML = riskAnalysisHTML;
     }
 
-    runMonteCarlo() {
-        const initialCorpus = this.targetCorpus;
-        const monthlyWithdrawal = parseFloat(document.getElementById('currentExpenses').value);
-        const years = parseInt(document.getElementById('lifeExpectancy').value) - parseInt(document.getElementById('retirementAge').value);
-
-        // Simplified Monte Carlo simulation
-        let successCount = 0;
-        const simulations = 1000;
-
-        for (let i = 0; i < simulations; i++) {
-            let corpus = initialCorpus;
-            let currentWithdrawal = monthlyWithdrawal;
-            let failed = false;
-
-            for (let year = 0; year < years; year++) {
-                // Random annual return between 6% and 14%
-                const annualReturn = 0.08 + (Math.random() - 0.5) * 0.08;
-                
-                // Adjust for inflation
-                currentWithdrawal *= 1.06;
-
-                // Annual withdrawal
-                const annualWithdrawal = currentWithdrawal * 12;
-
-                if (annualWithdrawal > corpus) {
-                    failed = true;
-                    break;
-                }
-
-                corpus -= annualWithdrawal;
-                corpus *= (1 + annualReturn);
+runMonteCarlo() {
+    // Get inputs for simulation
+    const currentAge = parseInt(document.getElementById('currentAge').value);
+    const retirementAge = parseInt(document.getElementById('retirementAge').value);
+    const lifeExpectancy = parseInt(document.getElementById('lifeExpectancy').value);
+    const currentExpenses = parseFloat(document.getElementById('currentExpenses').value);
+    const inflationPre = parseFloat(document.getElementById('inflationPre').value) / 100;
+    const returnPost = parseFloat(document.getElementById('returnPost').value) / 100;
+    
+    const yearsToRetirement = retirementAge - currentAge;
+    const retirementYears = lifeExpectancy - retirementAge;
+    
+    // Calculate future expenses at retirement
+    const futureMonthlyExpenses = currentExpenses * Math.pow(1 + inflationPre, yearsToRetirement);
+    
+    // Calculate target corpus (without buffer for more realistic simulation)
+    const futureAnnualExpenses = futureMonthlyExpenses * 12;
+    const annuityCorpus = this.calculateAnnuityCorpus(futureAnnualExpenses, retirementYears, returnPost, inflationPre);
+    const fourPercentCorpus = futureAnnualExpenses / 0.04;
+    const expenseMultipleCorpus = futureAnnualExpenses * (retirementYears <= 20 ? 15 : retirementYears <= 30 ? 20 : 25);
+    const initialCorpus = Math.max(annuityCorpus, fourPercentCorpus, expenseMultipleCorpus);
+    
+    console.log(`Monte Carlo Parameters:
+        Initial Corpus: ₹${this.formatNumber(initialCorpus)}
+        Monthly Withdrawal at Retirement: ₹${this.formatNumber(futureMonthlyExpenses)}
+        Retirement Years: ${retirementYears}
+        Post-Return: ${returnPost * 100}%
+        Inflation: ${inflationPre * 100}%`);
+    
+    // Monte Carlo simulation
+    let successCount = 0;
+    const simulations = 1000;
+    
+    for (let i = 0; i < simulations; i++) {
+        let corpus = initialCorpus;
+        let currentWithdrawal = futureMonthlyExpenses;
+        let failed = false;
+        
+        for (let year = 0; year < retirementYears; year++) {
+            // Random annual return with mean = returnPost and volatility
+            // Using normal distribution approximation
+            const volatility = 0.04; // 4% standard deviation
+            const randomReturn = returnPost + (Math.random() - 0.5) * 2 * volatility;
+            const annualReturn = Math.max(-0.1, Math.min(0.2, randomReturn)); // Cap between -10% and +20%
+            
+            // Random inflation with mean = inflationPre
+            const inflationVolatility = 0.02; // 2% standard deviation
+            const randomInflation = inflationPre + (Math.random() - 0.5) * 2 * inflationVolatility;
+            const annualInflation = Math.max(0, Math.min(0.15, randomInflation)); // Cap between 0% and 15%
+            
+            // Adjust withdrawal for inflation
+            currentWithdrawal *= (1 + annualInflation);
+            
+            // Annual withdrawal
+            const annualWithdrawal = currentWithdrawal * 12;
+            
+            // Apply returns to corpus
+            corpus *= (1 + annualReturn);
+            
+            // Withdraw at end of year (more realistic)
+            if (annualWithdrawal > corpus) {
+                failed = true;
+                break;
             }
-
-            if (!failed) successCount++;
+            
+            corpus -= annualWithdrawal;
+            
+            // Break if corpus is depleted
+            if (corpus <= 0) {
+                failed = true;
+                break;
+            }
         }
-
-        const successRate = (successCount / simulations) * 100;
-        document.getElementById('successRate').textContent = `${successRate.toFixed(1)}%`;
-
-        let message;
-        if (successRate > 90) {
-            message = 'Excellent! Your plan has high success probability';
-        } else if (successRate > 75) {
-            message = 'Good! Your plan has reasonable success probability';
-        } else if (successRate > 60) {
-            message = 'Moderate! Consider increasing your corpus or reducing expenses';
-        } else {
-            message = 'Risky! You need to significantly improve your plan';
-        }
-
-        this.showToast(`Monte Carlo Simulation: ${successRate.toFixed(1)}% success rate. ${message}`, 'info');
+        
+        if (!failed) successCount++;
     }
+    
+    const successRate = (successCount / simulations) * 100;
+    document.getElementById('successRate').textContent = `${successRate.toFixed(1)}%`;
+    
+    let message;
+    let messageType = 'info';
+    
+    if (successRate > 90) {
+        message = 'Excellent! Your plan has high success probability';
+        messageType = 'success';
+    } else if (successRate > 75) {
+        message = 'Good! Your plan has reasonable success probability';
+        messageType = 'success';
+    } else if (successRate > 60) {
+        message = 'Moderate! Consider increasing your corpus or reducing expenses';
+        messageType = 'warning';
+    } else {
+        message = 'Risky! You need to significantly improve your plan';
+        messageType = 'error';
+    }
+    
+    this.showToast(`Monte Carlo Simulation: ${successRate.toFixed(1)}% success rate. ${message}`, messageType);
+    
+    // Update recommendations with success probability
+    this.updateRecommendationsWithSuccessRate(successRate);
+}
+
+updateRecommendationsWithSuccessRate(successRate) {
+    const recommendations = document.getElementById('recommendations');
+    let recommendationsHTML = recommendations.innerHTML;
+    
+    // Add success rate recommendation
+    let successRecommendation = '';
+    if (successRate < 60) {
+        successRecommendation = `
+            <p><i class="fas fa-exclamation-triangle text-danger"></i> <strong>Low Success Probability (${successRate.toFixed(1)}%):</strong> 
+            Consider increasing your target corpus by ${Math.ceil((60 - successRate) / 5) * 10}% or 
+            reducing retirement expenses by ${Math.ceil((60 - successRate) / 3)}%</p>
+        `;
+    } else if (successRate < 75) {
+        successRecommendation = `
+            <p><i class="fas fa-exclamation-triangle text-warning"></i> <strong>Moderate Success Probability (${successRate.toFixed(1)}%):</strong> 
+            Consider adding a 10-15% buffer to your corpus for safety</p>
+        `;
+    } else {
+        successRecommendation = `
+            <p><i class="fas fa-check-circle text-success"></i> <strong>Good Success Probability (${successRate.toFixed(1)}%):</strong> 
+            Your plan appears sustainable</p>
+        `;
+    }
+    
+    // Insert at the beginning
+    recommendations.innerHTML = successRecommendation + recommendationsHTML;
+}
 
     updateStats() {
         const currentAge = parseInt(document.getElementById('currentAge').value);
